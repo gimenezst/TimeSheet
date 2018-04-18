@@ -2,6 +2,7 @@
 
 namespace UCS\Component\TimeSheet\Tests\Validator;
 
+use UCS\Component\TimeSheet\Validator\TimeSheetValidationContext;
 use UCS\Component\TimeSheet\Validator\SameWeekDays;
 use UCS\Component\TimeSheet\TimeSheet;
 use UCS\Component\TimeSheet\TimeEntry;
@@ -29,7 +30,7 @@ class SameWeekDaysTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetName()
     {
-	$this->assertSame('same_week_days', $this->sameWeekDays->getName());
+		$this->assertSame('same_week_days', $this->sameWeekDays->getName());
     }
 	
 	/**
@@ -46,8 +47,10 @@ class SameWeekDaysTest extends \PHPUnit_Framework_TestCase
 		$timeSheet = new TimeSheet();
 		$timeSheet->addEntry($timeEntry1)->addEntry($timeEntry2);
 				
+		$translator = $this->getMock('Symfony\Component\Translation\TranslatorInterface');
+		$timeSheetValidationContext = new TimeSheetValidationContext($translator, 'FR', $timeSheet);
 				
-		$this->assertTrue($this->sameWeekDays->validate($timeSheet));
+		$this->assertTrue($this->sameWeekDays->validate($timeSheetValidationContext));
 	}
 	
 	/**
@@ -64,7 +67,10 @@ class SameWeekDaysTest extends \PHPUnit_Framework_TestCase
 		$timeSheet = new TimeSheet();
 		$timeSheet->addEntry($timeEntry1)->addEntry($timeEntry2);
 				
+		$translator = $this->getMock('Symfony\Component\Translation\TranslatorInterface');
+		$timeSheetValidationContext = new TimeSheetValidationContext($translator, 'FR', $timeSheet);
 				
-		$this->assertFalse($this->sameWeekDays->validate($timeSheet));
+				
+		$this->assertFalse($this->sameWeekDays->validate($timeSheetValidationContext));
 	}
 }

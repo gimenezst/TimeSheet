@@ -10,21 +10,6 @@ use UCS\Component\TimeSheet\Validator\TimeSheetValidationRuleInterface;
 class SameWeekDays implements TimeSheetValidationRuleInterface
 {
     /**
-     *
-     * @var string
-     */
-    private $weekNumber;
-
-    /**
-     *
-     * @param string $pattern
-     */
-    public function __construct()
-    {
-        $this->weekNumber = date("W");
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getName()
@@ -32,18 +17,19 @@ class SameWeekDays implements TimeSheetValidationRuleInterface
         return 'same_week_days';
     }
 
-    /**
+/**
      * {@inheritdoc}
      */
     public function validate(TimeSheetValidationContext $validationContext)
     {
-	$timeSheet = $validationContext->timeSheet;
+	$timeSheet = $validationContext->getTimeSheet();
+	$weeks = [];
         foreach ($timeSheet->getEntries() as $entry) {
-            if(date("W", $entry->getDate()) != $this->weekNumber){
-                return false;
+            if (!in_array($entry->getDate()->format('W'), $weeks)) {
+		$weeks[] = $entry->getDate()->format('W');
             }
         }
 
-        return true;
+        return count($weeks) <= 1;
     }
 }
